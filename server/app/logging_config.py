@@ -1,7 +1,7 @@
 """Centralised loguru logging configuration.
 
 Loguru is the single sink for the whole application. The standard library
-``logging`` module (used by uvicorn, starlette, passlib, ...) is intercepted and
+``logging`` module (used by uvicorn, starlette, ...) is intercepted and
 forwarded to loguru so every log line shares one format and destination.
 """
 

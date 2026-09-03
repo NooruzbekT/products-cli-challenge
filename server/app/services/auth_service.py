@@ -7,13 +7,19 @@ and the per-token request budget live in
 focused on *who the user is* and *whether they may act*.
 """
 
+import bcrypt
 from loguru import logger
-from passlib.context import CryptContext
 
 from app.repositories.user_repository import UserRepository
 from app.schemas import UserRole
 
-_pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def verify_password(password: str, password_hash: str) -> bool:
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
+    except ValueError:
+        return False
+
 
 # Privileged actions that only users holding the ADMIN role may perform.
 _ADMIN_ONLY_ACTIONS = frozenset({"products:delete"})
@@ -32,7 +38,7 @@ class AuthService:
     # ---- Authentication ----
     def authenticate(self, username: str, password: str) -> bool:
         hashed = self._users.get_password_hash(username)
-        ok = bool(hashed and _pwd.verify(password, hashed))
+        ok = bool(hashed and verify_password(password, hashed))
         if ok:
             logger.info("authentication succeeded for {!r}", username)
         else:

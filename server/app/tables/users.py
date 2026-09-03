@@ -6,11 +6,14 @@ hashes, never plaintext.
 
 import sqlite3
 
-from passlib.context import CryptContext
+import bcrypt
 
 from app.schemas import UserRole
 
-_pwd = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def hash_password(password: str) -> str:
+    return bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
 
 SCHEMA = """
     CREATE TABLE IF NOT EXISTS users (
@@ -22,8 +25,8 @@ SCHEMA = """
 
 # Demo users. Passwords are hashed once, at import time.
 _SEED_USERS = [
-    ("demo", _pwd.hash("password123"), UserRole.USER),
-    ("admin", _pwd.hash("admin123"), UserRole.ADMIN),
+    ("demo", hash_password("password123"), UserRole.USER),
+    ("admin", hash_password("admin123"), UserRole.ADMIN),
 ]
 
 
