@@ -8,6 +8,20 @@ top of a seeded SQLite database.
 > at it. You *may* modify the server if your approach calls for it (see the
 > [top-level README](../README.md)); if you do, explain what you changed and why.
 
+## Changes made for this submission
+
+This server was updated to run on Python 3.13.5. Its dependencies were pinned to
+versions that cannot be installed there at all (`pydantic==2.7.4` needs
+`pydantic-core==2.18.4`, which publishes no cp313 wheels), so they were moved to
+current releases, and `passlib` — unmaintained since 2020, broken with
+bcrypt 4.1+, and dependent on the `crypt` module that PEP 594 removed in
+Python 3.13 — was replaced by direct `bcrypt` calls in
+`app/tables/users.py` and `app/services/auth_service.py`.
+
+No endpoint, schema, token lifetime, request budget, or authorization rule was
+changed. The full rationale is in [`../cli/README.md`](../cli/README.md#changes-made-to-the-server).
+The test suite below passes unmodified.
+
 ## Running
 
 From the repository root with Docker:
